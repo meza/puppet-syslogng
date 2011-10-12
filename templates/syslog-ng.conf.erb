@@ -16,14 +16,14 @@ source s_all {
 	syslog();
 	unix-stream("/dev/log");
 	internal();
-	<% if $isServer %>
+	<% if isServer %>
 	tcp(port(1000) keep-alive(yes));
 	<% end %>
 };
 
-<% if $isServer %>
+<% if isServer %>
 destination d_files {
-	file("/var/log/HOSTS/$HOST/$YEAR-$MONTH-$DAY/$FACILITY.log");
+	file("/var/log/HOSTS/HOST/YEAR-MONTH-DAY/FACILITY.log");
 };
 
 log {
@@ -32,7 +32,7 @@ log {
 };
 <% else %>
 destination d_net {
-	tcp("<%= $loghostIP %>", port(1000));
+	tcp("<%= loghostIP %>", port(1000));
 };
 
 log {
