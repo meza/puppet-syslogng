@@ -1,0 +1,42 @@
+@version: 3.1
+
+options {
+	long_hostnames(on);
+	flush_lines(0);
+	use_dns(yes);
+	dns_cache(yes);
+	use_fqdn(yes);
+	chain_hostnames(no);
+	create_dirs(yes);
+	keep_hostname(yes);
+};
+
+source s_all {
+	file("/proc/kmsg");
+	syslog();
+	unix-stream("/dev/log");
+	internal();
+	<% if $isServer %>
+	tcp(port(1000) keep-alive(yes));
+	<% end %>
+};
+
+<% if $isServer %>
+destination d_files {
+	file("/var/log/HOSTS/$HOST/$YEAR-$MONTH-$DAY/$FACILITY.log");
+};
+
+log {
+	source(s_all);
+	destination(d_files);
+};
+<% else %>
+destination d_net {
+	tcp("<%= $loghostIP %>", port(1000));
+};
+
+log {
+	source(s_all);
+	destination(d_net);
+};
+<% end %>

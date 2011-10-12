@@ -1,0 +1,3 @@
+Syslog-ng puppet module.
+
+Tries to minimize the syslog-ng config and clarify its intent.
