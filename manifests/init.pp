@@ -24,7 +24,6 @@ class syslog-ng {
 			content     => template("syslog-ng/syslog-ng.conf.erb"),
 			ensure      => present,
 			replace     => true,
-			refreshonly => true,
 			notify      => Service["syslog-ng"]
 		}
 	}
