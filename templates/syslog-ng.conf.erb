@@ -23,7 +23,7 @@ source s_all {
 
 <% if isServer %>
 destination d_files {
-	file("/var/log/$HOSTS/$HOST/$YEAR-$MONTH-$DAY/$FACILITY.log");
+	file("/var/log/HOSTS/$HOST/$YEAR-$MONTH-$DAY/$FACILITY.log");
 };
 
 log {
