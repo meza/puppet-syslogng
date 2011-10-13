@@ -24,11 +24,11 @@ source s_all {
 
 <% if isServer %>
 filter f_apache_access {
-	match("[access]" VALUE("MESSAGE"));
+	match("[access]" value("MESSAGE"));
 };
 
 filter f_apache_not {
-	not match("[apache]" VALUE("MESSAGE"));
+	not match("[apache]" value("MESSAGE"));
 };
 
 destination d_files {
