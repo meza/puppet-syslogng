@@ -11,6 +11,7 @@ options {
 	keep_hostname(yes);
 };
 
+
 source s_all {
 	file("/proc/kmsg");
 	syslog();
@@ -22,13 +23,52 @@ source s_all {
 };
 
 <% if isServer %>
+filter f_apache_access {
+	match("[syslog-apache-access]" VALUE("MESSAGE"));
+};
+
+filter f_apache_error {
+	match("[syslog-apache-error]" VALUE("MESSAGE"));
+};
+
+filter f_apache_not {
+	not match("[syslog-apache" VALUE("MESSAGE"));
+};
+
 destination d_files {
 	file("/var/log/HOSTS/$HOST/$YEAR-$MONTH-$DAY/$FACILITY.log");
 };
 
+destination d_apache_access {
+	file("/var/log/HOSTS/$HOST/$YEAR-$MONTH-$DAY/apache/access.log");
+};
+
+destination d_apache_error {
+	file("/var/log/HOSTS/$HOST/$YEAR-$MONTH-$DAY/apache/error.log");
+};
+
+rewrite apache {
+	subst("\[syslog-apache-[\]]+\]\s", "", value("MESSAGE"));
+};
+
 log {
 	source(s_all);
+	filter(f_apache_not);
 	destination(d_files);
+};
+
+log {
+	source(s_all);
+	filter(f_apache_access);
+	rewrite(apache);
+	destination(d_apache_access);
+};
+
+log {
+	source(s_all);
+	filter(f_apache_error);
+	rewrite(apache);
+	destination(d_apache_error);
 };
 <% else %>
 destination d_net {

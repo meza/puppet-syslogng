@@ -6,20 +6,22 @@ class syslog-ng {
 		ensure => running
 	}
 
-	define server() {
+	define server($sources=[]) {
 		deployFile { "fileForServer":
-			isServer => true
+			isServer => true,
+			sources  => $sources
 		}
 	}
 
-	define client($loghostIP) {
+	define client($loghostIP, $sources=[]) {
 		deployFile { "fileForClient":
 			isServer  => false,
-			loghostIP => $loghostIP
+			loghostIP => $loghostIP,
+			sources   => $sources
 		}
 	}
 
-	define deployFile($isServer, $loghostIP="0.0.0.0") {
+	define deployFile($isServer, $loghostIP="0.0.0.0", $sources=[]) {
 		file { "/etc/syslog-ng/syslog-ng.conf":
 			content     => template("syslog-ng/syslog-ng.conf.erb"),
 			ensure      => present,
