@@ -17,6 +17,9 @@ source s_all {
 	syslog();
 	unix-stream("/dev/log");
 	internal();
+	<% sources.each do |source| -%>
+	<%=source%>
+	<% end -%>
 	<% if isServer %>
 	tcp(port(1000) keep-alive(yes));
 	<% end %>
