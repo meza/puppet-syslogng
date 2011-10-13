@@ -24,15 +24,11 @@ source s_all {
 
 <% if isServer %>
 filter f_apache_access {
-	match("[syslog-apache-access]" VALUE("MESSAGE"));
-};
-
-filter f_apache_error {
-	match("[syslog-apache-error]" VALUE("MESSAGE"));
+	match("[access]" VALUE("MESSAGE"));
 };
 
 filter f_apache_not {
-	not match("[syslog-apache" VALUE("MESSAGE"));
+	not match("[apache]" VALUE("MESSAGE"));
 };
 
 destination d_files {
@@ -43,12 +39,8 @@ destination d_apache_access {
 	file("/var/log/HOSTS/$HOST/$YEAR-$MONTH-$DAY/apache/access.log");
 };
 
-destination d_apache_error {
-	file("/var/log/HOSTS/$HOST/$YEAR-$MONTH-$DAY/apache/error.log");
-};
-
 rewrite apache {
-	subst("\[syslog-apache-[\]]+\]\s", "", value("MESSAGE"));
+	subst("[apache] ", "", value("MESSAGE"));
 };
 
 log {
@@ -64,12 +56,6 @@ log {
 	destination(d_apache_access);
 };
 
-log {
-	source(s_all);
-	filter(f_apache_error);
-	rewrite(apache);
-	destination(d_apache_error);
-};
 <% else %>
 destination d_net {
 	tcp("<%= loghostIP %>", port(1000));
